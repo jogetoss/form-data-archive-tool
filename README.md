@@ -1,6 +1,6 @@
 # Description
 
-This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+Form Data Archive Tool allows to archive selected form data into a ZIP file.
 
 # Getting Help
 

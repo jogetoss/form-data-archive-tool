@@ -1,0 +1,131 @@
+[{
+    "title" : "@@tool.formdataarchive.config@@",
+    "properties" : [
+       
+        {
+            "label" : "@@tool.formdataarchive.header@@",
+            "type" : "header"
+        },
+        {
+            "name":"selectedApp",
+            "label":"@@tool.formdataarchive.selectApp@@",
+            "type":"selectbox",
+            "required":"True",
+            "control_field":"toBackup",
+            "control_value":"SELECTED",    
+            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getApps"
+        },
+        {
+            "name":"selectedForms",
+            "label":"@@tool.formdataarchive.selectForm@@",
+            "type":"MultiSelect",
+            "required":"True",
+            "options_ajax_on_change" : "selectedApp",   
+            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getForms"
+        },
+        {
+            "name": "startDate",
+            "label": "@@tool.formdataarchive.startDate@@",
+            "type": "textfield",
+            "required": "True",
+            "description" : "@@tool.formdataarchive.dateDesc@@"    
+        },
+        {
+            "name": "endDate",
+            "label": "@@tool.formdataarchive.endDate@@",
+            "type": "textfield",
+            "required": "True",
+            "description" : "@@tool.formdataarchive.dateDesc@@"  
+        },
+        {
+            "name" : "childFormArchive",
+            "label" : "@@tool.formdataarchive.archiveAssociated@@",
+            "type" : "checkbox",
+            "value" : "false",
+            "description" : "@@tool.formdataarchive.archiveAssociated.desc@@",    
+            "options" : [{
+                "value" : "true",
+                "label" : ""
+            }]
+        },
+        {
+            "name" : "deleteTableData",
+            "label" : "@@tool.formdataarchive.deleteTableData@@",
+            "type" : "checkbox",
+            "value" : "false",
+            "options" : [{
+                "value" : "true",
+                "label" : ""
+            }]
+        },
+        {
+            "name" : "deleteFiles",
+            "label" : "@@tool.formdataarchive.deleteFiles@@",
+            "type" : "checkbox",
+            "value" : "false",
+            "options" : [{
+                "value" : "true",
+                "label" : ""
+            }]
+        },
+        {
+            "name" : "deleteProcesses",
+            "label" : "@@tool.formdataarchive.DeleteProcesss@@",
+            "type" : "checkbox",
+            "value" : "false",
+            "options" : [{
+                "value" : "true",
+                "label" : ""
+            }]
+        },
+        {
+            "name": "pathOptions",
+            "label": "@@tool.formdataarchive.pathOptions@@",
+            "type": "selectbox",
+            "options": [
+                {
+                    "value": "",
+                    "label": ""
+                },
+                {
+                    "value": "FILE_PATH",
+                    "label": "Save to File Path"
+                },
+                {
+                    "value": "FORM_FIELD",
+                    "label": "Save to Form Field"
+                }
+            ]
+        },
+        {
+            "name": "archivePath",
+            "label": "@@tool.formdataarchive.path@@",
+            "type": "textfield",
+            "control_field": "pathOptions",
+            "control_value": "FILE_PATH",
+            "control_use_regex": "true",
+            "description": "@@tool.formdataarchive.path.desc@@"
+        },
+        {
+            "name": "fileFormDefId",
+            "label": "@@tool.formdataarchive.fileFormDefId@@",
+            "type": "selectbox",
+            "required": "True",
+            "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options",
+            "control_field": "pathOptions",
+            "control_value": "FORM_FIELD",
+            "control_use_regex": "true"
+        },
+        {
+            "name": "fileFieldId",
+            "label": "@@tool.formdataarchive.fileFieldId@@",
+            "type": "selectbox",
+            "options_ajax_on_change": "formDefId:fileFormDefId",
+            "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required": "True",
+            "control_field": "pathOptions",
+            "control_value": "FORM_FIELD",
+            "control_use_regex": "true"
+        }
+    ]
+}]

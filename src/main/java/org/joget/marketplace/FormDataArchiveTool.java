@@ -82,8 +82,13 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
         WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
         WorkflowProcessLinkDao linkDao = (WorkflowProcessLinkDao) AppUtil.getApplicationContext().getBean("workflowProcessLinkDao");
 
+        
+        String archiveFrontendBackendProperty = getPropertyString("archiveFrontendBackend");
         String selectedAppProperty = getPropertyString("selectedApp");
         String selectedFormsProperty = getPropertyString("selectedForms");
+        String formDefIdProperty = (String) properties.get("formDefId");
+        String appProperty = (String) properties.get("appField");
+        String formProperty = (String) properties.get("formField");
         String startDateProperty = getPropertyString("startDate");
         String endDateProperty = getPropertyString("endDate");
         String childFormArchiveProperty = getPropertyString("childFormArchive");
@@ -93,7 +98,6 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
         String fileFormDefId = getPropertyString("fileFormDefId");
         String fileFieldId = getPropertyString("fileFieldId");
         String archivePathProperty = getPropertyString("archivePath");
-
         String deleteTableDataProperty = getPropertyString("deleteTableData");
 
         // validate the archive path
@@ -126,6 +130,24 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
         if (startDate.after(endDate)) {
             LogUtil.info(getClassName(), "Start date cannot be after end date.");
             return null;
+        }
+
+        if (archiveFrontendBackendProperty.equals("frontend")){
+            AppDefinition currentAppDef = AppUtil.getCurrentAppDefinition();
+            String appId = currentAppDef.getAppId();
+            String appVersion = String.valueOf(currentAppDef.getVersion());
+            String recordId = "";
+            WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
+            if (wfAssignment != null) {
+                recordId = appService.getOriginProcessId(wfAssignment.getProcessId());
+            } else {
+                recordId = (String) properties.get("recordId");
+            }
+            FormRowSet rows = appService.loadFormData(appId, appVersion, formDefIdProperty, recordId);
+            FormRow formRow = rows.get(0);
+
+            selectedAppProperty = (String) formRow.get(appProperty);
+            selectedFormsProperty = (String) formRow.get(formProperty);
         }
 
         AppDefinition selectedAppDef = appService.getPublishedAppDefinition(selectedAppProperty);
@@ -745,7 +767,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
 
     @Override
     public String getVersion() {
-        return "8.0.0";
+        return "8.0.1";
     }
 
     @Override

@@ -42,7 +42,6 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.model.Form;
@@ -86,25 +85,67 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
         String archiveFrontendBackendProperty = getPropertyString("archiveFrontendBackend");
         String selectedAppProperty = getPropertyString("selectedApp");
         String selectedFormsProperty = getPropertyString("selectedForms");
-        String formDefIdProperty = (String) properties.get("formDefId");
-        String appProperty = (String) properties.get("appField");
-        String formProperty = (String) properties.get("formField");
         String startDateProperty = getPropertyString("startDate");
         String endDateProperty = getPropertyString("endDate");
         String childFormArchiveProperty = getPropertyString("childFormArchive");
+        String deleteTableDataProperty = getPropertyString("deleteTableData");
         String deleteFilesProperty = getPropertyString("deleteFiles");
         String deleteProcessesProperty = getPropertyString("deleteProcesses");
         String pathOptions = getPropertyString("pathOptions");
         String fileFormDefId = getPropertyString("fileFormDefId");
         String fileFieldId = getPropertyString("fileFieldId");
         String archivePathProperty = getPropertyString("archivePath");
-        String deleteTableDataProperty = getPropertyString("deleteTableData");
+
+        // get value from frontend
+        String formDefIdProperty = (String) properties.get("formDefId");
+        String appProperty = (String) properties.get("appField");
+        String formProperty = (String) properties.get("formField");
+        String childFormArchivePropertyFrontend = getPropertyString("childFormArchiveFrontend");
+        String deleteTableDataPropertyFrontend = getPropertyString("deleteTableDataFrontend");
+        String deleteFilesPropertyFrontend = getPropertyString("deleteFilesFrontend");
+        String deleteProcessesPropertyFrontend = getPropertyString("deleteProcessesFrontend");
+        String pathOptionsFrontend = getPropertyString("pathOptionsFrontend");
+        String fileFormDefIdFrontend = getPropertyString("fileFormDefIdFrontend");
+        String fileFieldIdFrontend = getPropertyString("fileFieldIdFrontend");
+        String archivePathPropertyFrontend = getPropertyString("archivePathFrontend");
+        
+        if (archiveFrontendBackendProperty.equals("frontend")){
+            AppDefinition currentAppDef = AppUtil.getCurrentAppDefinition();
+            String appId = currentAppDef.getAppId();
+            String appVersion = String.valueOf(currentAppDef.getVersion());
+            String recordId = "";
+            WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
+            if (wfAssignment != null) {
+                recordId = appService.getOriginProcessId(wfAssignment.getProcessId());
+            } else {
+                recordId = (String) properties.get("recordId");
+            }
+            FormRowSet rows = appService.loadFormData(appId, appVersion, formDefIdProperty, recordId);
+            FormRow formRow = rows.get(0);
+
+            selectedAppProperty = (String) formRow.get(appProperty);
+            selectedFormsProperty = (String) formRow.get(formProperty);
+            childFormArchiveProperty = (String) formRow.get(childFormArchivePropertyFrontend);
+            deleteTableDataProperty = (String) formRow.get(deleteTableDataPropertyFrontend);
+            deleteFilesProperty = (String) formRow.get(deleteFilesPropertyFrontend);
+            deleteProcessesProperty = (String) formRow.get(deleteProcessesPropertyFrontend);
+            pathOptions = (String) formRow.get(pathOptionsFrontend);
+            fileFormDefId = (String) formRow.get(fileFormDefIdFrontend);
+            fileFieldId = (String) formRow.get(fileFieldIdFrontend);
+            archivePathProperty = (String) formRow.get(archivePathPropertyFrontend);
+        }
+
+        // Create final variables for use in lambda (must be effectively final)
+        final String finalPathOptions = pathOptions;
+        final String finalFileFormDefId = fileFormDefId;
+        final String finalFileFieldId = fileFieldId;
+        final String finalArchivePathProperty = archivePathProperty;
 
         // validate the archive path
-        if("FILE_PATH".equalsIgnoreCase(pathOptions)){       
-            File archiveDir = new File(archivePathProperty);
+        if("FILE_PATH".equalsIgnoreCase(finalPathOptions)){       
+            File archiveDir = new File(finalArchivePathProperty);
             if (!archiveDir.exists() || !archiveDir.isDirectory()) {
-                LogUtil.info(getClassName(), "Backup path does not exist or is not a directory: " + archivePathProperty);
+                LogUtil.info(getClassName(), "Backup path does not exist or is not a directory: " + finalArchivePathProperty);
                 return null;
             }
         }
@@ -130,24 +171,6 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
         if (startDate.after(endDate)) {
             LogUtil.info(getClassName(), "Start date cannot be after end date.");
             return null;
-        }
-
-        if (archiveFrontendBackendProperty.equals("frontend")){
-            AppDefinition currentAppDef = AppUtil.getCurrentAppDefinition();
-            String appId = currentAppDef.getAppId();
-            String appVersion = String.valueOf(currentAppDef.getVersion());
-            String recordId = "";
-            WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
-            if (wfAssignment != null) {
-                recordId = appService.getOriginProcessId(wfAssignment.getProcessId());
-            } else {
-                recordId = (String) properties.get("recordId");
-            }
-            FormRowSet rows = appService.loadFormData(appId, appVersion, formDefIdProperty, recordId);
-            FormRow formRow = rows.get(0);
-
-            selectedAppProperty = (String) formRow.get(appProperty);
-            selectedFormsProperty = (String) formRow.get(formProperty);
         }
 
         AppDefinition selectedAppDef = appService.getPublishedAppDefinition(selectedAppProperty);
@@ -208,7 +231,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                 
                 // Determine base path for archiving based on pathOptions
                 String baseArchivePath;
-                if ("FORM_FIELD".equalsIgnoreCase(pathOptions)) {
+                if ("FORM_FIELD".equalsIgnoreCase(finalPathOptions)) {
                     // Use FileManager base directory when saving to form field
                     baseArchivePath = FileManager.getBaseDirectory() + "fda_temp_" + System.currentTimeMillis();
                     try {
@@ -219,7 +242,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                     }
                 } else {
                     // Use provided archive path
-                    baseArchivePath = archivePathProperty;
+                    baseArchivePath = finalArchivePathProperty;
                 }
 
                 for (String formDefId : formDefinitionIds) {
@@ -261,6 +284,9 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                                 columnNames.add(col);
                             }
                         }
+                    } else {
+                        LogUtil.error(getClassName(), null, "No records found to archive.");
+                        break;
                     }
 
                     long totalRows = 0;
@@ -343,12 +369,12 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                     
                     // Determine where to create the ZIP file
                     File finalZipFile;
-                    if ("FORM_FIELD".equalsIgnoreCase(pathOptions)) {
+                    if ("FORM_FIELD".equalsIgnoreCase(finalPathOptions)) {
                         // Create ZIP in FileManager base directory when saving to form field
                         finalZipFile = new File(FileManager.getBaseDirectory() + finalZipFileName);
                     } else {
                         // Create ZIP in archive path for FILE_PATH option
-                        String finalZipFilePath = archivePathProperty + File.separator + finalZipFileName;
+                        String finalZipFilePath = finalArchivePathProperty + File.separator + finalZipFileName;
                         finalZipFile = new File(finalZipFilePath);
                     }
 
@@ -368,17 +394,17 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                         LogUtil.info(getClassName(), "Final archive ZIP created: " + finalZipFile.getAbsolutePath() + " containing " + successfulArchivedTables.size() + " tables");
 
                         // Handle file saving based on pathOptions
-                        if ("FILE_PATH".equalsIgnoreCase(pathOptions)) {
+                        if ("FILE_PATH".equalsIgnoreCase(finalPathOptions)) {
                             if (finalZipFile.exists()) {
-                                LogUtil.info(getClassName(), "File saved to: " + archivePathProperty);
+                                LogUtil.info(getClassName(), "File saved to: " + finalArchivePathProperty);
                             }
-                        } else if ("FORM_FIELD".equalsIgnoreCase(pathOptions)) {
+                        } else if ("FORM_FIELD".equalsIgnoreCase(finalPathOptions)) {
                             if (finalZipFile.exists()) {
                                 // Generate a new record ID for storing the file
                                 String recordId = UUID.randomUUID().toString();
                                 try {
-                                    saveFileToForm(appService, selectedAppDef, fileFormDefId, fileFieldId, finalZipFile, recordId);
-                                    LogUtil.info(getClassName(), "ZIP file saved to form field: " + fileFieldId + " in form: " + fileFormDefId);
+                                    saveFileToForm(appService, selectedAppDef, finalFileFormDefId, finalFileFieldId, finalZipFile, recordId);
+                                    LogUtil.info(getClassName(), "ZIP file saved to form field: " + finalFileFieldId + " in form: " + finalFileFormDefId);
                                     // Clean up temporary ZIP file after saving to form
                                     try {
                                         if (finalZipFile.exists()) {
@@ -407,7 +433,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                         }
                         
                         // Clean up temporary base directory if using FORM_FIELD
-                        if ("FORM_FIELD".equalsIgnoreCase(pathOptions)) {
+                        if ("FORM_FIELD".equalsIgnoreCase(finalPathOptions)) {
                             try {
                                 File baseDir = new File(baseArchivePath);
                                 if (baseDir.exists()) {
@@ -573,7 +599,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
     private void saveFileToForm(AppService appService, AppDefinition appDef, String fileFormDefId, String fileFieldId, File outputFile, String recordId){
         if (outputFile.exists()) {
             String fileName = outputFile.getName();
-            String tableName = appService.getFormTableName(appDef, fileFormDefId);
+            String tableName = fileFormDefId;
             FileUtil.storeFile(outputFile, tableName, recordId);
             FormRowSet rows = new FormRowSet();
             FormRow row = new FormRow();

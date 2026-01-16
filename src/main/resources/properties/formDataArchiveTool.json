@@ -1,7 +1,6 @@
 [{
     "title" : "@@tool.formdataarchive.config@@",
     "properties" : [
-       
         {
             "label" : "@@tool.formdataarchive.header@@",
             "type" : "header"
@@ -25,42 +24,25 @@
                     "label": "@@tool.formdataarchive.backend@@"
                 }
             ]
-        },
-        {
-            "name":"selectedApp",
-            "label":"@@tool.formdataarchive.selectApp@@",
-            "type":"selectbox",
-            "required":"True",
-            "control_field":"archiveFrontendBackend",
-            "control_value":"backend",    
-            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getApps"
-        },
-        {
-            "name":"selectedForms",
-            "label":"@@tool.formdataarchive.selectForm@@",
-            "type":"MultiSelect",
-            "required":"True",
-            "control_field":"archiveFrontendBackend",
-            "control_value":"backend",   
-            "options_ajax_on_change" : "selectedApp",   
-            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getForms"
-        },
-
-        {
+        }
+    ]
+},
+{
+    "title": "@@tool.formdataarchive.frontend@@",
+    "control_field":"archiveFrontendBackend",
+    "control_value":"frontend",    
+    "properties" : [
+       {
             "name" : "formDefId",
             "label" : "@@tool.formdataarchive.formDefId@@",
             "type" : "selectbox",
             "required" : "True",
-            "control_field":"archiveFrontendBackend",
-            "control_value":"frontend",   
             "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options"
         },
         {
             "name" : "appField",
             "label" : "@@tool.formdataarchive.appField@@",
             "type" : "selectbox",
-            "control_field":"archiveFrontendBackend",
-            "control_value":"frontend",  
             "options_ajax_on_change" : "formDefId",
             "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
             "required" : "True"
@@ -69,11 +51,109 @@
             "name" : "formField",
             "label" : "@@tool.formdataarchive.formField@@",
             "type" : "selectbox",
-            "control_field":"archiveFrontendBackend",
-            "control_value":"frontend",  
             "options_ajax_on_change" : "formDefId",
             "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
             "required" : "True"
+        },
+        {
+            "name": "startDate",
+            "label": "@@tool.formdataarchive.startDate@@",
+            "type": "textfield",
+            "required": "True",
+            "description" : "@@tool.formdataarchive.dateDesc@@"    
+        },
+        {
+            "name": "endDate",
+            "label": "@@tool.formdataarchive.endDate@@",
+            "type": "textfield",
+            "required": "True",
+            "description" : "@@tool.formdataarchive.dateDesc@@"  
+        },
+             {
+            "name" : "childFormArchiveFrontend",
+            "label" : "@@tool.formdataarchive.archiveAssociatedFrontend@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name" : "deleteTableDataFrontend",
+            "label" : "@@tool.formdataarchive.deleteTableDataFrontend@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name" : "deleteFilesFrontend",
+            "label" : "@@tool.formdataarchive.deleteFilesFrontend@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name" : "deleteProcessesFrontend",
+            "label" : "@@tool.formdataarchive.deleteProcesssesFrontend@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name": "pathOptionsFrontend",
+            "label": "@@tool.formdataarchive.pathOptions@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name": "archivePathFrontend",
+            "label": "@@tool.formdataarchive.path@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name": "fileFormDefIdFrontend",
+            "label": "@@tool.formdataarchive.fileFormDefId@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        },
+        {
+            "name": "fileFieldIdFrontend",
+            "label": "@@tool.formdataarchive.fileFieldId@@",
+            "type" : "selectbox",
+            "options_ajax_on_change" : "formDefId",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "required" : "True"
+        }
+    ]
+},
+{
+    "title": "@@tool.formdataarchive.backend@@",
+    "control_field":"archiveFrontendBackend",
+    "control_value":"backend",    
+    "properties" : [
+       {
+            "name":"selectedApp",
+            "label":"@@tool.formdataarchive.selectApp@@",
+            "type":"selectbox",
+            "required":"True",
+            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getApps"
+        },
+        {
+            "name":"selectedForms",
+            "label":"@@tool.formdataarchive.selectForm@@",
+            "type":"MultiSelect",
+            "required":"True",
+            "options_ajax_on_change" : "selectedApp",   
+            "options_ajax": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.marketplace.FormDataArchiveTool/service?action=getForms"
         },
         {
             "name": "startDate",
@@ -122,7 +202,7 @@
         },
         {
             "name" : "deleteProcesses",
-            "label" : "@@tool.formdataarchive.DeleteProcesss@@",
+            "label" : "@@tool.formdataarchive.deleteProcessses@@",
             "type" : "checkbox",
             "value" : "false",
             "options" : [{
@@ -130,7 +210,9 @@
                 "label" : ""
             }]
         },
-        {
+
+
+          {
             "name": "pathOptions",
             "label": "@@tool.formdataarchive.pathOptions@@",
             "required":"True",

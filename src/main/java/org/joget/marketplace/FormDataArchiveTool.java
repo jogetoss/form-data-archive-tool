@@ -335,7 +335,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
                                         List<String> csvValues = new ArrayList<>();
                                         for (String col : columnNames) {
                                             String val = row.getProperty(col);
-                                            csvValues.add(val != null ? val.replace("'", "''") : "");
+                                            csvValues.add(val != null ? val : "");
                                         }
                                         csvPrinter.printRecord(csvValues);
 
@@ -599,7 +599,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
     private void saveFileToForm(AppService appService, AppDefinition appDef, String fileFormDefId, String fileFieldId, File outputFile, String recordId){
         if (outputFile.exists()) {
             String fileName = outputFile.getName();
-            String tableName = fileFormDefId;
+            String tableName = appService.getFormTableName(appDef, fileFormDefId);
             FileUtil.storeFile(outputFile, tableName, recordId);
             FormRowSet rows = new FormRowSet();
             FormRow row = new FormRow();
@@ -793,7 +793,7 @@ public class FormDataArchiveTool extends DefaultApplicationPlugin implements Plu
 
     @Override
     public String getVersion() {
-        return "8.0.1";
+        return "8.0.0";
     }
 
     @Override

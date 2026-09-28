@@ -2,6 +2,9 @@
 
 Form Data Archive Tool allows to archive selected form data into a ZIP file.
 
+To setup and configure this plugin, please see the [documentation](https://kb.joget.org/jw/web/userview/jdocs/docs/marketplace/form-data-archive-tool).
+
+
 # Getting Help
 
 JogetOSS is a community-led team for open source software related to the [Joget](https://www.joget.org) no-code/low-code application platform.
